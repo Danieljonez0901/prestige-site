@@ -737,6 +737,7 @@
         <div class="header">
             <div class="header-controls">
                 <button class="control-btn" onclick="goToReports()">Analytics</button>
+                <button class="control-btn" id="reset-btn" type="button">Reset All Data</button>
             </div>
             
             <div class="logo-container">
@@ -996,7 +997,7 @@
                     📊 Generate New Report & Start Next Cycle
                 </button>
                 <button class="btn btn-danger" onclick="resetAllData()" style="font-size: 1.1rem; padding: 20px 40px;">
-                    🔄 Reset All Data (Practice Mode)
+                    🔄 Reset All Data
                 </button>
             </div>
             
@@ -1006,19 +1007,19 @@
                     <div class="report-meta">Generated: September 20, 2025</div>
                     <div class="report-metrics">
                         <div class="report-metric">
-                            <div class="report-metric-value">$3,247</div>
+                            <div class="report-metric-value" id="daily-rev">$3,247</div>
                             <div class="report-metric-label">Today's Revenue</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">847</div>
+                            <div class="report-metric-value" id="daily-subs">847</div>
                             <div class="report-metric-label">New Subscribers</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">23.4%</div>
+                            <div class="report-metric-value" id="daily-cvr">23.4%</div>
                             <div class="report-metric-label">Conversion Rate</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">156</div>
+                            <div class="report-metric-value" id="daily-active">156</div>
                             <div class="report-metric-label">Active Campaigns</div>
                         </div>
                     </div>
@@ -1030,19 +1031,19 @@
                     <div class="report-meta">Week of September 14-20, 2025</div>
                     <div class="report-metrics">
                         <div class="report-metric">
-                            <div class="report-metric-value">$18,950</div>
+                            <div class="report-metric-value" id="weekly-rev">$18,950</div>
                             <div class="report-metric-label">Week Revenue</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">5,247</div>
+                            <div class="report-metric-value" id="weekly-subs">5,247</div>
                             <div class="report-metric-label">New Subscribers</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">19.8%</div>
+                            <div class="report-metric-value" id="weekly-cvr">19.8%</div>
                             <div class="report-metric-label">Avg Conversion</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">2.1M</div>
+                            <div class="report-metric-value" id="weekly-impr">2.1M</div>
                             <div class="report-metric-label">Total Impressions</div>
                         </div>
                     </div>
@@ -1054,19 +1055,19 @@
                     <div class="report-meta">September 2025 Performance</div>
                     <div class="report-metrics">
                         <div class="report-metric">
-                            <div class="report-metric-value">$127,950</div>
+                            <div class="report-metric-value" id="monthly-rev">$127,950</div>
                             <div class="report-metric-label">Month Revenue</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">23,847</div>
+                            <div class="report-metric-value" id="monthly-subs">23,847</div>
                             <div class="report-metric-label">New Subscribers</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">21.7%</div>
+                            <div class="report-metric-value" id="monthly-cvr">21.7%</div>
                             <div class="report-metric-label">Monthly Conversion</div>
                         </div>
                         <div class="report-metric">
-                            <div class="report-metric-value">8.9M</div>
+                            <div class="report-metric-value" id="monthly-reach">8.9M</div>
                             <div class="report-metric-label">Total Reach</div>
                         </div>
                     </div>
@@ -1512,71 +1513,124 @@
             showPage(0);
         }
 
-        // Reset all data function for practice runs
         function resetAllData() {
-            if (confirm('🔄 RESET ALL DATA\n\nThis will clear ALL entered data across all sections:\n• Mass DM campaigns\n• Revenue entries\n• Team assignments\n• Story data\n• PPV records\n• Promo tracking\n\nAre you sure you want to reset everything for a fresh practice run?')) {
-                
-                // Reset all tables by removing extra rows and clearing first row
-                resetTable('revenue-table');
-                resetTable('team-table');
-                resetTable('stories-table');
-                resetTable('ppv-table');
-                resetTable('promotions-table');
-                
-                // Reset Mass DM section
-                resetMassDMSection();
-                
-                // Go back to first page
-                showPage(0);
-                
-                alert('✅ All data has been reset!\n\nYou can now start a fresh practice run from Mass DMs.');
-            }
+            const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+            // Header metrics → 0
+            setText('total-reports', '0');
+            setText('total-revenue', '$0');
+            setText('active-campaigns', '0');
+
+            // Daily → 0
+            setText('daily-rev', '$0');
+            setText('daily-subs', '0');
+            setText('daily-cvr', '0%');
+            setText('daily-active', '0');
+
+            // Weekly → 0
+            setText('weekly-rev', '$0');
+            setText('weekly-subs', '0');
+            setText('weekly-cvr', '0%');
+            setText('weekly-impr', '0');
+
+            // Monthly → 0
+            setText('monthly-rev', '$0');
+            setText('monthly-subs', '0');
+            setText('monthly-cvr', '0%');
+            setText('monthly-reach', '0');
+
+            // Inputs
+            document.querySelectorAll('input[type="number"]').forEach(i => { i.value = '0'; i.dispatchEvent(new Event('input')); });
+            document.querySelectorAll('input[type="text"], textarea').forEach(i => i.value = '');
+            document.querySelectorAll('input[type="date"]').forEach(i => i.value = '');
+            document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+
+            // Totals
+            document.querySelectorAll('.total-cell').forEach(td => td.textContent = '$0.00');
+
+            // Mass DM back to selection
+            const sel = document.getElementById('shift-selection');
+            const mgmt = document.getElementById('dm-management');
+            const grid = document.getElementById('dm-grid');
+            if (grid) grid.innerHTML = '';
+            if (sel) sel.style.display = 'block';
+            if (mgmt) mgmt.style.display = 'none';
+
+            // Navigate to Mass DMs (page 0)
+            if (typeof showPage === 'function') showPage(0);
         }
 
         function resetTable(tableId) {
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            
-            const tbody = table.getElementsByTagName('tbody')[0];
-            const rows = tbody.getElementsByTagName('tr');
-            
-            // Remove all rows except the first one
-            while (rows.length > 1) {
-                tbody.removeChild(rows[rows.length - 1]);
-            }
-            
-            // Clear the first row's inputs
-            if (rows.length > 0) {
-                const firstRow = rows[0];
-                const inputs = firstRow.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    if (input.type === 'checkbox') {
-                        input.checked = true; // Reset checkboxes to checked
-                    } else if (input.tagName === 'SELECT') {
-                        input.selectedIndex = 0; // Reset selects to first option
-                    } else {
-                        input.value = ''; // Clear text/number/date inputs
-                    }
-                });
+            try {
+                const table = document.getElementById(tableId);
+                if (!table) {
+                    console.log('Table not found:', tableId);
+                    return;
+                }
                 
-                // Reset any total cells
-                const totalCells = firstRow.querySelectorAll('.total-cell');
-                totalCells.forEach(cell => {
-                    cell.textContent = '$0.00';
-                });
+                const tbody = table.getElementsByTagName('tbody')[0];
+                if (!tbody) {
+                    console.log('Tbody not found for:', tableId);
+                    return;
+                }
+                
+                const rows = Array.from(tbody.getElementsByTagName('tr'));
+                
+                // Remove all rows except the first one
+                for (let i = rows.length - 1; i > 0; i--) {
+                    tbody.removeChild(rows[i]);
+                }
+                
+                // Clear the first row's inputs
+                if (rows.length > 0) {
+                    const firstRow = rows[0];
+                    const inputs = firstRow.querySelectorAll('input, select, textarea');
+                    
+                    inputs.forEach(input => {
+                        if (input.type === 'checkbox') {
+                            input.checked = true;
+                        } else if (input.tagName === 'SELECT') {
+                            input.selectedIndex = 0;
+                        } else {
+                            input.value = '';
+                        }
+                    });
+                    
+                    // Reset any total cells
+                    const totalCells = firstRow.querySelectorAll('.total-cell');
+                    totalCells.forEach(cell => {
+                        cell.textContent = '$0.00';
+                    });
+                }
+                
+                console.log('Reset completed for:', tableId);
+                
+            } catch (error) {
+                console.error('Error resetting table:', tableId, error);
             }
         }
 
         function resetMassDMSection() {
-            // Reset shift selection
-            document.getElementById('shift-selection').style.display = 'block';
-            document.getElementById('dm-management').style.display = 'none';
-            selectedShift = null;
-            
-            // Clear the DM grid
-            const dmGrid = document.getElementById('dm-grid');
-            if (dmGrid) {
-                dmGrid.innerHTML = '';
+            try {
+                // Reset shift selection
+                const shiftSelection = document.getElementById('shift-selection');
+                const dmManagement = document.getElementById('dm-management');
+                
+                if (shiftSelection) shiftSelection.style.display = 'block';
+                if (dmManagement) dmManagement.style.display = 'none';
+                
+                selectedShift = null;
+                
+                // Clear the DM grid
+                const dmGrid = document.getElementById('dm-grid');
+                if (dmGrid) {
+                    dmGrid.innerHTML = '';
+                }
+                
+                console.log('Mass DM section reset completed');
+                
+            } catch (error) {
+                console.error('Error resetting Mass DM section:', error);
             }
         }
 
@@ -1596,6 +1650,10 @@
 
             // Add input validation to all existing inputs
             addInputValidation();
+
+            // Bind reset button
+            const resetBtn = document.getElementById('reset-btn');
+            if (resetBtn) resetBtn.addEventListener('click', resetAllData);
         });
     </script>
 </body>
